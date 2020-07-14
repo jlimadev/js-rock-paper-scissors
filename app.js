@@ -14,14 +14,14 @@ const getPlayerChoice = () => {
     `${ROCK_CHOICE}, ${PAPER_CHOICE} or ${SCISSORS_CHOICE}?`,
     ""
   ).toUpperCase();
+
   if (
     selection !== ROCK_CHOICE &&
     selection !== PAPER_CHOICE &&
     selection !== SCISSORS_CHOICE
   ) {
-    console.log(selection);
     alert(`Invalid choice! ${DEFAULT_CHOICE} was defined`);
-    return DEFAULT_CHOICE;
+    return;
   } else {
     return selection;
   }
@@ -29,41 +29,41 @@ const getPlayerChoice = () => {
 
 const getComputerChoice = () => {
   const randomValue = Math.random();
-  if (randomValue < 0.34) {
-    return ROCK_CHOICE;
-  } else if (randomValue < 0.67) {
-    return PAPER_CHOICE;
-  } else {
-    return SCISSORS_CHOICE;
-  }
+  return randomValue < 0.34
+    ? ROCK_CHOICE
+    : randomValue < 0.67
+    ? PAPER_CHOICE
+    : SCISSORS_CHOICE;
 };
 
-const getWinner = (computerChoice, playerChoice) => {
-  isPlaying = false;
-  if (computerChoice === playerChoice) {
-    return RESULT_DRAW;
-  } else if (
-    playerChoice === ROCK_CHOICE && computerChoice === SCISSORS_CHOICE ||
-    playerChoice === SCISSORS_CHOICE && computerChoice === PAPER_CHOICE ||
-    playerChoice === PAPER_CHOICE && computerChoice === ROCK_CHOICE
-  ) {
-    return RESULT_PLAYER_WINS;
-  } else {
-    return RESULT_COMPUTER_WINS;
-  }
-};
+const getWinner = (computerChoice, playerChoice = DEFAULT_CHOICE) =>
+  computerChoice === playerChoice
+    ? RESULT_DRAW
+    : (playerChoice === ROCK_CHOICE && computerChoice === SCISSORS_CHOICE) ||
+      (playerChoice === SCISSORS_CHOICE && computerChoice === PAPER_CHOICE) ||
+      (playerChoice === PAPER_CHOICE && computerChoice === ROCK_CHOICE)
+    ? RESULT_PLAYER_WINS
+    : RESULT_COMPUTER_WINS;
 
-startGameBtn.addEventListener("click", function startGame() {
+startGameBtn.addEventListener("click", () => {
   if (isPlaying) {
     return;
+  } else {
+    isPlaying = true;
+    console.log("The game is starting...");
+    const playerChoice = getPlayerChoice();
+    const computerChoice = getComputerChoice();
+    const winner = playerChoice ? getWinner(computerChoice, playerChoice) : getWinner(computerChoice);
+    let message = `You picked ${playerChoice || DEFAULT_CHOICE} and computer picked ${computerChoice}, so `;
+    
+    message =
+      winner === RESULT_DRAW
+        ? message + "it is a draw"
+        : winner === RESULT_PLAYER_WINS
+        ? message + "you won!"
+        : message + "you lost!";
+    alert(message);
+    console.log(`Winner: ${winner}`);
+    isPlaying = false;
   }
-
-  isPlaying = true;
-  console.log("The game is starting...");
-  const playerSelection = getPlayerChoice();
-  console.log(`Player selection: ${playerSelection}`);
-  const computerSelection = getComputerChoice();
-  console.log(`Computer selection: ${computerSelection}`);
-  const winner = getWinner(computerSelection, playerSelection);
-  console.log(`Winner: ${winner}`);
 });
